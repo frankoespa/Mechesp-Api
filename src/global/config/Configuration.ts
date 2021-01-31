@@ -8,22 +8,32 @@ interface IConfiguration {
     DATABASE: {
         MONGODB_URI: string;
     };
+    MAILJET: {
+        KEY: string,
+        SECRET_KEY: string
+    }
 }
 
 export enum Config {
-    PORT = 'PORT',
-	MONGODB_URI = 'DATABASE.MONGODB_URI'
+	PORT = 'PORT',
+	MONGODB_URI = 'DATABASE.MONGODB_URI',
+	MAILJET_KEY = 'MAILJET.KEY',
+	MAILJET_SECRET_KEY = 'MAILJET.SECRET_KEY'
 }
 
-export class Configuration {
+export abstract class Configuration {
     static Get(): ConfigFactory<IConfiguration> {
         return (): IConfiguration => ({
 			PORT: parseInt(process.env.PORT, 10) || 4000,
-            FIREBASE: {
-                CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+			FIREBASE: {
+				CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS
 			},
 			DATABASE: {
 				MONGODB_URI: process.env.MONGODB_URI
+			},
+			MAILJET: {
+				KEY: process.env.MAILJET_KEY,
+				SECRET_KEY: process.env.MAILJET_SECRET_KEY
 			}
 		});
     }
