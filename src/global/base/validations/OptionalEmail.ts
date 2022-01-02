@@ -21,6 +21,11 @@ export function OptionalEmail(validationOptions?: ValidationOptions) {
 						args.object[args.property] = value;
 					}
 
+                    if (typeof value === 'undefined') {
+                        value = null;
+                        args.object[args.property] = null;
+                    }
+
 					return isEmail(value) || value === null;
 				}
 			}

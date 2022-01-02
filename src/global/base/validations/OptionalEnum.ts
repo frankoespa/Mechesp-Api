@@ -1,4 +1,4 @@
-import { registerDecorator, ValidationOptions, isEnum } from 'class-validator';
+import { registerDecorator, ValidationOptions, isEnum, ValidationArguments } from 'class-validator';
 
 export function OptionalEnum(entity: Record<string, any>, validationOptions?: ValidationOptions) {
 	return function(object: Record<string, any>, propertyName: string): void {
@@ -26,7 +26,13 @@ export function OptionalEnum(entity: Record<string, any>, validationOptions?: Va
 				message: validationOptions?.message ?? `El campo $property es opcional, debe ser uno de los siguientes valores: ${messageValues} y ser de tipo número`
 			},
 			validator: {
-				validate(value: any) {
+				validate(value: any, args: ValidationArguments) {
+
+                    if (typeof value === 'undefined') {
+                        value = null;
+                        args.object[args.property] = null;
+                    }
+
 					return isEnum(value, entity) || value === null;
 				}
 			}

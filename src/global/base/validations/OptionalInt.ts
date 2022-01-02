@@ -1,4 +1,4 @@
-import { registerDecorator, ValidationOptions, isInt } from 'class-validator';
+import { registerDecorator, ValidationOptions, isInt, ValidationArguments } from 'class-validator';
 
 export function OptionalInt(validationOptions?: ValidationOptions) {
 	return function(object: Record<string, any>, propertyName: string): void {
@@ -15,7 +15,13 @@ export function OptionalInt(validationOptions?: ValidationOptions) {
 				message: validationOptions?.message ?? 'El campo $property es opcional y debe ser de tipo número'
 			},
 			validator: {
-				validate(value: any) {
+				validate(value: any, args: ValidationArguments) {
+
+                    if (typeof value === 'undefined') {
+                        value = null;
+                        args.object[args.property] = null;
+                    }
+
 					return isInt(value) || value === null;
 				}
 			}

@@ -13,6 +13,8 @@ import { CreateUserVO } from '../valueObjects/CreateUserVO';
 import { Role } from '../../role/schema/RoleSchema';
 import { RoleDomain } from '../../role/domain/RoleDomain';
 import { EmailSenderService } from '../../notifications/providers/EmailSenderService';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class UserService implements IUsersService {
@@ -21,10 +23,12 @@ export class UserService implements IUsersService {
 		private readonly documentLoaderService: DocumentLoaderService,
 		private readonly authFirebaseService: AuthFirebaseService,
 		private readonly randomCodeService: RandomCodeService,
-		private readonly emailSenderService: EmailSenderService
+		private readonly emailSenderService: EmailSenderService,
+        @InjectModel(User.name) private readonly userModel: Model<User>
 	) {}
 
 	async Create(createUserCommand: CreateUserCommand): Promise<void> {
+
 		if (await this.userRepository.FindWithEmail(createUserCommand.Email))
 			throw new ValidationException('Ya existe un usuario con el email ingresado');
 
@@ -64,6 +68,7 @@ export class UserService implements IUsersService {
 
 	async CreateFirstAdminUser(): Promise<User> {
 		const allFirebaseUsers = (await this.authFirebaseService.ListUsers()).users;
+
 		if (allFirebaseUsers.length != 0) {
 			return;
 		}

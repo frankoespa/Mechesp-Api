@@ -1,24 +1,13 @@
-import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { Role } from "../schema/RoleSchema";
+import { Injectable } from '@nestjs/common';
+import { DropDownVM } from '../../global/base/DropDownVM';
+import { RoleRepository } from './RoleRepository';
 
 @Injectable()
 export class RoleService {
+	constructor(private readonly roleRepository: RoleRepository) {}
 
-    constructor(@InjectModel(Role.name) private readonly roleModel: Model<Role>) {
+	async ReadAll(): Promise<DropDownVM[]>{
+        const rolesDomain = await this.roleRepository.ReadAll();
+        return rolesDomain.map<DropDownVM>(r => ({_id: r.Doc._id, Description: r.Doc.Description}))
     }
-    
-    async CreateRoles(): Promise<void>{
-        
-        await this.roleModel.create({
-            _id: 1,
-            Description: 'Admin'
-        })
-        await this.roleModel.create({
-			_id: 2,
-			Description: 'Customer'
-		});
-    }
-
 }
